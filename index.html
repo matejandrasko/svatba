@@ -53,12 +53,25 @@
     transition:border-color .2s,color .2s;
   }
   .topbar a.active,.topbar a:hover{color:var(--blue-deep);border-color:var(--blue-deep);}
+  .topbar-head{display:none;}
+  .mobile-brand{display:none;}
+  .menu-toggle{display:none;}
   @media (max-width:640px){
-    .topbar{overflow-x:auto;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch;}
-    .topbar-inner{width:max-content;max-width:none;flex-wrap:nowrap;justify-content:flex-start;gap:8px;padding:10px 14px;}
-    .topbar a{font-size:.8rem;white-space:nowrap;padding:7px 5px;min-height:36px;}
+    .topbar{overflow:visible;}
+    .topbar-head{display:flex;align-items:center;justify-content:space-between;min-height:58px;padding:8px 20px;}
+    .mobile-brand{display:inline-flex;align-items:center;gap:4px;text-decoration:none;font-family:'Cormorant Garamond',serif;font-size:1.45rem;letter-spacing:.03em;color:var(--ink);}
+    .mobile-brand span{color:var(--blue-deep);}
+    .menu-toggle{display:flex;flex-direction:column;justify-content:center;align-items:center;gap:5px;width:44px;height:44px;padding:10px;border:1px solid var(--blue);border-radius:3px;background:rgba(255,255,255,.92);cursor:pointer;}
+    .menu-toggle span{display:block;width:20px;height:1.5px;background:var(--ink);transition:transform .2s,opacity .2s;}
+    .topbar.menu-open .menu-toggle span:first-child{transform:translateY(6.5px) rotate(45deg);}
+    .topbar.menu-open .menu-toggle span:nth-child(2){opacity:0;}
+    .topbar.menu-open .menu-toggle span:last-child{transform:translateY(-6.5px) rotate(-45deg);}
+    .topbar-inner{display:none;width:100%;max-width:none;flex-direction:column;align-items:stretch;gap:0;padding:4px 20px 14px;border-top:1px solid var(--blue-light);background:rgba(255,255,255,.98);}
+    .topbar.menu-open .topbar-inner{display:flex;}
+    .topbar-inner a{font-size:.92rem;white-space:normal;padding:10px 2px;min-height:0;border-bottom:1px solid var(--blue-light);}
+    .topbar-inner a:last-child{border-bottom:0;}
     .wrap{padding-inline:20px;}
-    section{padding:76px 0;scroll-margin-top:60px;}
+    section{padding:76px 0;scroll-margin-top:70px;}
     .hero{padding:100px 18px 34px;min-height:100svh;}
     .hero .scroll{margin-top:42px;}
   }
@@ -424,6 +437,12 @@
 <body>
 
 <header class="topbar">
+  <div class="topbar-head">
+    <a class="mobile-brand" href="#uvod" aria-label="Lucie a Matěj – úvod">L <span>&amp;</span> M</a>
+    <button class="menu-toggle" id="menuToggle" type="button" aria-label="Otevřít navigační menu" aria-expanded="false" aria-controls="topnav">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
   <div class="topbar-inner" id="topnav">
     <a href="#uvod">Domů</a>
     <a href="#novomanzele">Novomanželé</a>
@@ -628,33 +647,91 @@ Ostatně, sladké stálo už na úplném začátku našeho příběhu. První zp
 <script>
 
   // countdown to the wedding day
-  // Přidání svatebního obřadu do kalendáře (soubor .ics funguje na mobilu i počítači)
+  // Přidání svatby do kalendáře: na Androidu otevře předvyplněnou událost v Google Kalendáři,
+  // na iPhonu nabídne soubor .ics, který lze otevřít a potvrdit v Kalendáři.
   document.getElementById('calendarBtn').addEventListener('click', () => {
+    const title = 'Svatba Lucie a Matěje';
+    const location = 'Samota Hemme, Lasvice 47, 470 02 Zákupy';
+    const description = 'Příjezd hostů přibližně v 11:00. Svatební obřad začíná ve 12:00.';
+    const isAndroid = /Android/i.test(navigator.userAgent);
+    const isAppleMobile = /iPhone|iPad|iPod/i.test(navigator.userAgent) ||
+      (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+
+    if (isAndroid) {
+      const params = new URLSearchParams({
+        action: 'TEMPLATE',
+        text: title,
+        dates: '20270713T110000/20270713T130000',
+        ctz: 'Europe/Prague',
+        details: description,
+        location
+      });
+      window.location.href = 'https://calendar.google.com/calendar/render?' + params.toString();
+      return;
+    }
+
+    const escapeICS = value => value
+      .replace(/\\/g, '\\\\')
+      .replace(/;/g, '\\;')
+      .replace(/,/g, '\\,')
+      .replace(/\r?\n/g, '\\n');
     const event = [
       'BEGIN:VCALENDAR',
       'VERSION:2.0',
       'PRODID:-//Lucie a Matej//Svatebni web//CS',
       'CALSCALE:GREGORIAN',
+      'METHOD:PUBLISH',
       'BEGIN:VEVENT',
       'UID:svatba-lucie-matej-20270713@svatebni-web',
-      'DTSTAMP:20261011T170000Z',
-      'DTSTART;TZID=Europe/Prague:20270713T120000',
+      'DTSTAMP:20261011T000000Z',
+      'DTSTART;TZID=Europe/Prague:20270713T110000',
       'DTEND;TZID=Europe/Prague:20270713T130000',
-      'SUMMARY:Svatební obřad – Lucie a Matěj',
-      'LOCATION:Samota Hemme\\, Lasvice 47\\, 470 02 Zákupy',
-      'DESCRIPTION:Svatební obřad Lucie a Matěje začíná ve 12:00.',
+      'SUMMARY:' + escapeICS(title),
+      'LOCATION:' + escapeICS(location),
+      'DESCRIPTION:' + escapeICS(description),
+      'BEGIN:VALARM',
+      'TRIGGER:-PT1H',
+      'ACTION:DISPLAY',
+      'DESCRIPTION:Připomínka svatby Lucie a Matěje',
+      'END:VALARM',
       'END:VEVENT',
       'END:VCALENDAR'
-    ].join('\\r\\n');
+    ].join('\r\n');
     const blob = new Blob([event], {type:'text/calendar;charset=utf-8'});
     const url = URL.createObjectURL(blob);
+    if (isAppleMobile) {
+      // Přímé otevření .ics v Safari dává iPhonu/iPadu možnost nabídnout přidání do Kalendáře.
+      window.location.href = url;
+      setTimeout(() => URL.revokeObjectURL(url), 60000);
+      return;
+    }
     const link = document.createElement('a');
     link.href = url;
     link.download = 'svatba-lucie-matej.ics';
+    link.style.display = 'none';
     document.body.appendChild(link);
     link.click();
     link.remove();
-    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    setTimeout(() => URL.revokeObjectURL(url), 3000);
+  });
+
+  // Mobilní hamburger menu: otevření, zavření po výběru sekce i klávesou Escape.
+  const topbar = document.querySelector('.topbar');
+  const menuToggle = document.getElementById('menuToggle');
+  const topnav = document.getElementById('topnav');
+  const closeMobileMenu = () => {
+    topbar.classList.remove('menu-open');
+    menuToggle.setAttribute('aria-expanded', 'false');
+    menuToggle.setAttribute('aria-label', 'Otevřít navigační menu');
+  };
+  menuToggle.addEventListener('click', () => {
+    const open = topbar.classList.toggle('menu-open');
+    menuToggle.setAttribute('aria-expanded', String(open));
+    menuToggle.setAttribute('aria-label', open ? 'Zavřít navigační menu' : 'Otevřít navigační menu');
+  });
+  topnav.querySelectorAll('a').forEach(link => link.addEventListener('click', closeMobileMenu));
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') closeMobileMenu();
   });
 
   const weddingDate = new Date('2027-07-13T00:00:00+02:00').getTime();
