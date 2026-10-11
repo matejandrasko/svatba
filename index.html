@@ -54,8 +54,13 @@
   }
   .topbar a.active,.topbar a:hover{color:var(--blue-deep);border-color:var(--blue-deep);}
   @media (max-width:640px){
-    .topbar-inner{gap:14px 16px;padding:12px 14px;}
-    .topbar a{font-size:.78rem;}
+    .topbar{overflow-x:auto;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch;}
+    .topbar-inner{width:max-content;max-width:none;flex-wrap:nowrap;justify-content:flex-start;gap:8px;padding:10px 14px;}
+    .topbar a{font-size:.8rem;white-space:nowrap;padding:7px 5px;min-height:36px;}
+    .wrap{padding-inline:20px;}
+    section{padding:76px 0;scroll-margin-top:60px;}
+    .hero{padding:100px 18px 34px;min-height:100svh;}
+    .hero .scroll{margin-top:42px;}
   }
 
   /* ---- nav dots ---- */
@@ -194,10 +199,20 @@
 
   /* ---- info / venue ---- */
   .info-grid{
-    display:grid;grid-template-columns:1fr 1fr;gap:48px;
-    text-align:center;
+    display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:28px;
+    text-align:center;align-items:stretch;
   }
-  @media (max-width:640px){.info-grid{grid-template-columns:1fr;gap:44px;}}
+  .info-item{
+    box-sizing:border-box;display:flex;flex-direction:column;align-items:center;
+    height:100%;min-width:0;min-height:270px;padding:28px 22px 24px;
+    border:1px solid var(--blue);
+  }
+  .info-item .big{min-height:2.25em;display:flex;align-items:center;justify-content:center;margin:0 0 6px;}
+  .info-item h3{min-height:1.5em;display:flex;align-items:center;justify-content:center;margin:0 0 10px;}
+  .info-item > p:not(.big){min-height:2.8em;display:flex;align-items:center;justify-content:center;margin:0;}
+  .info-item .event-time{margin-top:0!important;color:var(--ink);font-size:1rem;}
+  .info-item .route-btn,.info-item .calendar-btn{margin-top:auto!important;flex-shrink:0;}
+  @media (max-width:640px){.info-grid{grid-template-columns:minmax(0,1fr);gap:18px;}.info-item{min-height:250px;}}
   .info-item h3{font-size:1.3rem;margin-bottom:10px;}
   .info-item p{color:var(--muted);font-size:.98rem;}
   .info-item .big{font-family:'Cormorant Garamond',serif;font-size:1.7rem;color:var(--ink);margin-bottom:6px;}
@@ -223,12 +238,23 @@
 
 
 
-  .route-btn{
-    display:inline-block;margin-top:16px;padding:11px 24px;border:1px solid var(--blue-deep);
-    color:var(--blue-deep);text-decoration:none;border-radius:2px;font-size:.9rem;letter-spacing:.02em;
+  .route-btn,.calendar-btn{
+    display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box;
+    margin-top:16px;padding:11px 24px;min-height:46px;border:1px solid var(--blue-deep);
+    background:transparent;color:var(--blue-deep);text-decoration:none;border-radius:2px;
+    font-family:'Jost',sans-serif;font-size:.9rem;letter-spacing:.02em;cursor:pointer;
     transition:background .2s,color .2s;
   }
-  .route-btn:hover{background:var(--blue-deep);color:var(--white);}
+  .route-btn:hover,.calendar-btn:hover{background:var(--blue-deep);color:var(--white);}
+  .info-item .event-time{margin-top:8px;color:var(--ink);font-size:1rem;}
+  @media(max-width:640px){
+    .info-item{padding:24px 18px;}
+    .route-btn,.calendar-btn{width:100%;max-width:320px;margin-left:auto;margin-right:auto;}
+    .venue{margin-top:48px;gap:22px;}
+    .lightbox{padding-inline:10px;}
+    #misto .finder-box{padding:16px;}
+    #misto #seatingClusters{overflow-x:auto;}
+  }
 
   .route-btn.disabled{opacity:.5;pointer-events:none;border-style:dashed;}
   .rsvp{text-align:center;}
@@ -445,8 +471,8 @@
         <div class="person-text">
           <h3>Matýsek</h3>
           <p class="role">Ženich</p>
-          <p class="bio">Sem napiš pár vět o Matějovi: zajímavosti, drobnosti a příhody, které o něm svatebčané třeba ještě nevědí.</p>
-          <p class="bio">Klidně přidej, co ho dokáže rozesmát, nebo co si všiml na Lucii jako první.</p>
+          <p class="bio">Říká se, že láska prochází žaludkem, a u nás to platí do posledního drobečku. Já jsem totiž živý důkaz toho, že dobré jídlo dokáže dělat zázraky – a obzvlášť sladké. Potřebuji svou denní dávku cukru, jinak se ze mě velmi rychle stává nevrlý tvor, se kterým není radno si zahrávat.
+Ostatně, sladké stálo už na úplném začátku našeho příběhu. První zpráva, kterou jsem kdy Lucce napsal, abych navázal kontakt a prolomil ledy, byla čistě z hloubi mého srdce (a žaludku) – děkoval jsem jí v ní za šlehačkovou roládu z Globusu. A jak se ukázalo, byl to ten nejlepší krok v mém životě. Lucka od té doby ví, jak na mě, a když mi dodá dostatek sladkého, jsem ten nejhodnější muž pod sluncem. ❤️</p>
         </div>
         <div class="photo"><img src="matej.jpg" alt="Matěj"></div>
       </div>
@@ -466,9 +492,10 @@
         <a class="route-btn" href="https://www.google.com/maps/dir/?api=1&amp;destination=Samota+Hemme%2C+Lasvice+47%2C+470+02+Z%C3%A1kupy&amp;travelmode=driving" target="_blank" rel="noopener">Navigovat v Google Mapách</a>
       </div>
       <div class="info-item">
-        <p class="big">13. 7. 2027</p>
-        <h3>Datum svatby</h3>
-        <p>Čas a podrobnosti najdete níže</p>
+        <p class="big">Datum Svatby</p>
+        <h3>13.07.2027</h3>
+        <p class="event-time"><strong>Obřad začíná ve 12:00</strong></p>
+        <button class="calendar-btn" id="calendarBtn" type="button">＋ Přidat do kalendáře</button>
       </div>
     </div>
 
@@ -492,7 +519,7 @@
     <div class="dress-grid">
       <div class="dress-col">
         <h3>Ženy</h3>
-        <p>Šaty v pastelových odstínech modré, růžové a zelené</p>
+        <p>Pastelové odstíny modré, růžové a zelené</p>
         <div class="swatches" aria-hidden="true">
           <span class="swatch" style="background:#dbeaf7;" title="Pastelově modrá"></span>
           <span class="swatch" style="background:#bfd9ee;" title="Pastelově modrá"></span>
@@ -541,47 +568,9 @@
     </div>
 
     <div class="menu-group">
-      <h3>Studený raut</h3>
+      <h3>Studený raut / Teplý raut / Sweet bar</h3>
       <ul class="menu-list">
-        <li>Variace italských, španělských a českých uzenin a sýrů</li>
-        <li>Bedýnka hovězího tataráku</li>
-        <li>Bagely s uzeným lososem</li>
-        <li>Focaccia s prosciuttem</li>
-        <li>Salát caprese</li>
-        <li>Kanapky</li>
-        <li>Chlebíčky</li>
-        <li>Ovoce a zelenina</li>
-        <li>Domácí chléb</li>
-      </ul>
-    </div>
-
-    <div class="menu-group">
-      <h3>Teplý raut</h3>
-      <ul class="menu-list">
-        <li>Bedýnka řízků <span class="menu-note">(kuřecí, vepřové)</span></li>
-        <li>Mini burgery s trhaným vepřovým</li>
-        <li>Quesadilla s krůtím masem</li>
-        <li>Grilovaná zelenina</li>
-        <li>Kuřecí paličky z grilu</li>
-        <li>Pečený hovězí guláš z grilu</li>
-        <li>Grilovaný hermelín</li>
-      </ul>
-    </div>
-
-    <div class="menu-group">
-      <h3>Přílohy</h3>
-      <ul class="menu-list">
-        <li>Pečené grenaille</li>
-        <li>2 druhy knedlíků ke svíčkové</li>
-        <li>Domácí chléb</li>
-      </ul>
-    </div>
-
-    <div class="menu-group">
-      <h3>Saláty</h3>
-      <ul class="menu-list">
-        <li>Zelný salát</li>
-        <li>Salát caprese</li>
+        <li>Zbytek vám necháme jako překvapění</li>
       </ul>
     </div>
   </div>
@@ -593,7 +582,7 @@
     <h2 class="title">Čím nás můžete potěšit</h2>
     <div class="gift">
       <div class="divider"></div>
-      <p class="lead">Největší radost nám udělá <em>příspěvek v penězích</em>.</p>
+      <p class="lead">Největší radost nám udělá <em>peněžní dar</em>.</p>
       <p>Prosíme vás proto primárně o finanční dar místo věcných dárků. Vaše přítomnost s námi je pro nás tím nejdůležitějším, všechno ostatní je jen krásný bonus.</p>
       <p class="note">Děkujeme vám za štědrost a za to, že s námi tento den oslavíte.</p>
     </div>
@@ -639,6 +628,35 @@
 <script>
 
   // countdown to the wedding day
+  // Přidání svatebního obřadu do kalendáře (soubor .ics funguje na mobilu i počítači)
+  document.getElementById('calendarBtn').addEventListener('click', () => {
+    const event = [
+      'BEGIN:VCALENDAR',
+      'VERSION:2.0',
+      'PRODID:-//Lucie a Matej//Svatebni web//CS',
+      'CALSCALE:GREGORIAN',
+      'BEGIN:VEVENT',
+      'UID:svatba-lucie-matej-20270713@svatebni-web',
+      'DTSTAMP:20261011T170000Z',
+      'DTSTART;TZID=Europe/Prague:20270713T120000',
+      'DTEND;TZID=Europe/Prague:20270713T130000',
+      'SUMMARY:Svatební obřad – Lucie a Matěj',
+      'LOCATION:Samota Hemme\\, Lasvice 47\\, 470 02 Zákupy',
+      'DESCRIPTION:Svatební obřad Lucie a Matěje začíná ve 12:00.',
+      'END:VEVENT',
+      'END:VCALENDAR'
+    ].join('\\r\\n');
+    const blob = new Blob([event], {type:'text/calendar;charset=utf-8'});
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'svatba-lucie-matej.ics';
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  });
+
   const weddingDate = new Date('2027-07-13T00:00:00+02:00').getTime();
   const countdownEl = document.getElementById('countdown');
 
